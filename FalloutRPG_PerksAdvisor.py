@@ -17,12 +17,15 @@ def filter_perks(str_value, per_value, end_value, cha_value, int_value, agi_valu
             perk["max_level"] = perk["rank"]["max"]  # Add the maximum rank level as max_level
             filtered_perks.append(perk)
 
+    # Sort filtered perks by level requirement
+    filtered_perks.sort(key=lambda x: int(x['requirements'].get('Level', 0)))
+    
     return filtered_perks
 
 def check_requirements(requirements, values, immune_to_radiation, robot, ghul):
     # Check if all requirements are met
     for attr, value in requirements.items():
-        if attr in ["Level", "immune_to_Radiation", "robot", "ghul"]:
+        if attr in ["immune_to_Radiation", "robot", "ghul"]:
             continue  # Skip these requirements, they are not related to attribute values
         elif attr == "STR" and values[0] < value:
             return False
@@ -38,7 +41,7 @@ def check_requirements(requirements, values, immune_to_radiation, robot, ghul):
             return False
         elif attr == "LCK" and values[6] < value:
             return False
-        elif attr == "Level" and values[7] < value:
+        elif attr == "Level" and values[7] < int(value):
             return False
 
     # Check additional conditions
@@ -56,7 +59,7 @@ def display_requirements(requirements):
         return ""
 
     requirements_text = ", ".join([f"{attr} {value}" for attr, value in requirements.items()])
-    return f"Requirement: {requirements_text}"
+    return f"Requirements: {requirements_text}"
 
 # Load data from JSON file
 with open('extracted_items.json', 'r', encoding='utf-8') as file:
